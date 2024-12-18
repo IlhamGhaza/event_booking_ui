@@ -1,8 +1,13 @@
-import 'package:event_booking_app/pages/home/fragment/event-fragment.dart';
-import 'package:event_booking_app/pages/home/fragment/iconbar-fragment.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
+import 'dart:async';
+
+import 'detail_event.dart';
+import 'fragment/event-fragment.dart';
+import 'fragment/iconbar-fragment.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,16 +22,33 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _getLastKnownLocation();
+    _loadSavedLocation();
   }
 
+  // Muat lokasi terakhir yang disimpan
+  Future<void> _loadSavedLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedLocation = prefs.getString('last_location');
+
+    if (savedLocation != null) {
+      setState(() {
+        location = savedLocation;
+      });
+    } else {
+      _getLastKnownLocation();
+    }
+  }
+
+  // Simpan lokasi ke SharedPreferences
+  Future<void> _saveLocation(String loc) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_location', loc);
+  }
+
+  // Mendapatkan lokasi terakhir
   Future<void> _getLastKnownLocation() async {
     try {
-      bool serviceEnabled;
-      LocationPermission permission;
-
-      // Mengecek layanan lokasi
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() {
           location = "Location services are disabled";
@@ -34,8 +56,7 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
-      // Mengecek izin akses lokasi
-      permission = await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
@@ -46,14 +67,6 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
-      if (permission == LocationPermission.deniedForever) {
-        setState(() {
-          location = "Location permissions are permanently denied";
-        });
-        return;
-      }
-
-      // Mengambil lokasi terakhir yang diketahui
       Position? position = await Geolocator.getLastKnownPosition();
       if (position != null) {
         await _getAddressFromLatLong(position.latitude, position.longitude);
@@ -69,15 +82,18 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Konversi latitude & longitude ke alamat
   Future<void> _getAddressFromLatLong(double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
 
+      String newLocation =
+          "${place.locality}, ${place.country}"; // Contoh: Jakarta, Indonesia
+      await _saveLocation(newLocation); // Simpan lokasi
       setState(() {
-        location =
-            "${place.locality}, ${place.country}"; // Contoh: Jakarta, Indonesia
+        location = newLocation;
       });
     } catch (e) {
       setState(() {
@@ -123,6 +139,25 @@ class _HomePageState extends State<HomePage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    // shimmer effect for location
+                    // showFallback || location != "Loading..."
+                    //     ? Text(
+                    //         location,
+                    //         style: TextStyle(
+                    //           color: Colors.black,
+                    //           fontSize: 20,
+                    //           fontWeight: FontWeight.w500,
+                    //         ),
+                    //       )
+                    //     : Shimmer.fromColors(
+                    //         baseColor: Colors.grey[300]!,
+                    //         highlightColor: Colors.grey[100]!,
+                    //         child: Container(
+                    //           width: 120,
+                    //           height: 20,
+                    //           color: Colors.grey[300],
+                    //         ),
+                    //       ),
                   ],
                 ),
                 Column(
@@ -205,43 +240,50 @@ class _HomePageState extends State<HomePage> {
                 //event list
                 Column(
                   children: [
-                ListView.builder(
-                  itemCount: 3,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
+                    ListView.builder(
+                      itemCount: 3,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Eventfragment(
-                            onPressed: () {},
-                            imageEvent: 'assets/images/event.jpg',
-                            textDate: 'Aug\n24',
-                            textName: 'Dua Lipa',
+                              child: Eventfragment(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailEvent(),
+                                    ),
+                                  );
+                                },
+                                imageEvent: 'assets/images/event.jpg',
+                                textDate: 'Aug\n24',
+                                textName: 'Dua Lipa',
                                 textLocation: 'Jakarta, Indonesia',
-                            textPrice: 'Rp. 1.000.000',
-                          ),
-                        ),
+                                textPrice: 'Rp. 1.000.000',
+                              ),
+                            ),
                             SizedBox(
                               height: 10,
                             ),
-                      ],
-                    );
-                  },
-                ),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 )
               ],
