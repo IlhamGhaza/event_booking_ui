@@ -4,10 +4,9 @@ import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:async';
-
-import 'detail_event.dart';
-import 'fragment/event-fragment.dart';
-import 'fragment/iconbar-fragment.dart';
+import 'detail_page.dart';
+import '../fragment/event-fragment.dart';
+import '../fragment/iconbar-fragment.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -254,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.grey.withValues(alpha: 0.1),
                                     spreadRadius: 2,
                                     blurRadius: 5,
                                     offset: Offset(0, 3),
@@ -266,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => DetailEvent(),
+                                      builder: (context) => DetailPage(),
                                     ),
                                   );
                                 },
