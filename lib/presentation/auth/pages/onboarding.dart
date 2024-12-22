@@ -76,7 +76,7 @@ class Onboarding extends StatelessWidget {
                           ),
                         );
                       },
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(12),
                       child: const Center(
                         child: Text(
                           'Get Started',
