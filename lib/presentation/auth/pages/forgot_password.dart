@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/app_theme.dart';
+import '../../../config/bloc/theme_cubit.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -19,135 +22,145 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          'Forgot Password',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Reset Password',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Enter your email to reset your password.',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        final theme = themeMode == ThemeMode.dark
+            ? AppTheme.darkTheme
+            : AppTheme.lightTheme;
+
+        return Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: theme.appBarTheme.backgroundColor,
+            elevation: 0,
+            iconTheme: IconThemeData(color: theme.iconTheme.color),
+            title: Text(
+              'Forgot Password',
+              style: TextStyle(color: theme.textTheme.titleLarge?.color),
+            ),
+          ),
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        Text(
+                          'Reset Password',
+                          style: TextStyle(
+                            color: theme.textTheme.headlineSmall?.color,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        prefixIcon: const Icon(Icons.email_outlined),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      height: 55,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff6351ec),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Handle password reset
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Password reset link sent to your email.',
-                                  ),
-                                ),
-                              );
+                        const SizedBox(height: 10),
+                        Text(
+                          'Enter your email address to reset your password.',
+                          style: TextStyle(
+                            color: theme.textTheme.bodyMedium?.color,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            hintText: 'Enter your email',
+                            prefixIcon:
+                                Icon(Icons.email, color: theme.iconTheme.color),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: theme.dividerColor),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: theme.primaryColor),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
                             }
+                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
                           },
-                          borderRadius: BorderRadius.circular(12),
-                          child: const Center(
+                        ),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                // TODO: Implement password reset logic
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Password reset email sent'),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
                             child: Text(
-                              'Send Reset Link',
+                              'Reset Password',
                               style: TextStyle(
-                                color: Colors.white,
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                color: theme.textTheme.labelLarge?.color,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Remembered your password?',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              color: Color(0xff6351ec),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Remember your password? ',
+                              style: TextStyle(
+                                color: theme.textTheme.bodyMedium?.color,
+                              ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
