@@ -1,5 +1,6 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/bloc/theme_cubit.dart';
 import 'package:flutter/material.dart';
-
 import '../../admin/pages/manage_event.dart';
 import '../../auth/pages/onboarding.dart';
 
@@ -58,6 +59,23 @@ class _ProfileState extends State<Profile> {
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {},
             ),
+            // change theme to dark mode
+            ListTile(
+              leading: const Icon(Icons.dark_mode),
+              title: const Text('Dark Mode'),
+              trailing: BlocBuilder<ThemeCubit, ThemeMode>(
+                builder: (context, themeMode) {
+                  return Switch(
+                    value: themeMode == ThemeMode.dark,
+                    onChanged: (value) {
+                      context.read<ThemeCubit>().updateTheme(
+                          value ? ThemeMode.dark : ThemeMode.light);
+                    },
+                  );
+                },
+              ),
+            ),
+            //if user is not logged in
             ListTile(
               leading: const Icon(Icons.help),
               title: const Text('Help & Support'),

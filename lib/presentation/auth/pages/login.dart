@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                           onTap: () {
 
                             //sementara 
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const Bottomnav(),
