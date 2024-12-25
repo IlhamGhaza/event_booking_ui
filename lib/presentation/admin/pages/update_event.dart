@@ -3,21 +3,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../config/app_theme.dart';
 import '../../../config/bloc/theme_cubit.dart';
 
-class UploadEvent extends StatefulWidget {
-  const UploadEvent({super.key});
+class UpdateEvent extends StatefulWidget {
+  const UpdateEvent({super.key});
 
   @override
-  State<UploadEvent> createState() => _UploadEventState();
+  State<UpdateEvent> createState() => _UpdateEventState();
 }
 
-class _UploadEventState extends State<UploadEvent> {
-  final TextEditingController _eventNameController = TextEditingController();
+class _UpdateEventState extends State<UpdateEvent> {
+    final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _eventDetailController = TextEditingController();
 
@@ -51,7 +50,6 @@ class _UploadEventState extends State<UploadEvent> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
@@ -173,8 +171,9 @@ class _UploadEventState extends State<UploadEvent> {
                                         style: theme.textTheme.titleLarge,
                                       ),
                                       content: SizedBox(
-                                        width: MediaQuery.of(context).size.width *
-                                            0.8,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
                                         height: 400,
                                         child: Column(
                                           children: [
@@ -215,14 +214,16 @@ class _UploadEventState extends State<UploadEvent> {
                                                 if (pickedTime != null) {
                                                   // selectedTime minimum time
                                                   if (pickedTime.hour <
-                                                          TimeOfDay.now().hour ||
+                                                          TimeOfDay.now()
+                                                              .hour ||
                                                       (pickedTime.hour ==
                                                               TimeOfDay.now()
                                                                   .hour &&
                                                           pickedTime.minute <
                                                               TimeOfDay.now()
                                                                   .minute)) {
-                                                    ScaffoldMessenger.of(context)
+                                                    ScaffoldMessenger.of(
+                                                            context)
                                                         .showSnackBar(
                                                       SnackBar(
                                                         backgroundColor:
@@ -237,7 +238,7 @@ class _UploadEventState extends State<UploadEvent> {
                                                     );
                                                     return;
                                                   }
-                
+
                                                   setDialogState(() {
                                                     _startTime = pickedTime;
                                                   });
@@ -256,26 +257,28 @@ class _UploadEventState extends State<UploadEvent> {
                                                 final TimeOfDay? pickedTime =
                                                     await showTimePicker(
                                                   context: context,
-                                                  initialTime:
-                                                      _endTime ?? TimeOfDay.now(),
+                                                  initialTime: _endTime ??
+                                                      TimeOfDay.now(),
                                                 );
                                                 if (pickedTime != null) {
                                                   // Membatasi waktu untuk tidak memilih waktu yang sudah lewat dari waktu saat ini
                                                   if (pickedTime.hour <
-                                                          TimeOfDay.now().hour ||
+                                                          TimeOfDay.now()
+                                                              .hour ||
                                                       (pickedTime.hour ==
                                                               TimeOfDay.now()
                                                                   .hour &&
                                                           pickedTime.minute <
                                                               TimeOfDay.now()
                                                                   .minute)) {
-                                                    ScaffoldMessenger.of(context)
+                                                    ScaffoldMessenger.of(
+                                                            context)
                                                         .showSnackBar(SnackBar(
                                                             content: Text(
                                                                 'You cannot pick a past time!')));
                                                     return;
                                                   }
-                
+
                                                   setDialogState(() {
                                                     _endTime = pickedTime;
                                                   });
@@ -392,13 +395,13 @@ class _UploadEventState extends State<UploadEvent> {
                                   );
                                 } else {
                                   //logic to add event
-                
+
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                         content:
                                             Text('Event Added Successfully!')),
                                   );
-                
+
                                   setState(() {
                                     _eventNameController.clear();
                                     _priceController.clear();

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     primaryColor: Color(0xff6351ec),
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: Color(0xfff1f3ff), //background color
     appBarTheme: AppBarTheme(
       color: Colors.white,
       iconTheme: IconThemeData(color: Colors.black),
@@ -13,11 +13,9 @@ class AppTheme {
       primary: Color(0xff6351ec),
       secondary: Color(0xffe3e6ff),
       surface: Colors.white,
-      background: Color(0xfff1f3ff),
-      onPrimary: Colors.white,
+      onPrimary: Colors.white, //onBackground
       onSecondary: Colors.black,
       onSurface: Colors.black,
-      onBackground: Colors.black,
     ),
     textTheme: TextTheme(
       displayLarge: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
@@ -47,11 +45,9 @@ class AppTheme {
       primary: Color(0xff7d6df3),
       secondary: Color(0xff2a2d3e),
       surface: Color(0xff1e1e1e),
-      background: Color(0xff121212),
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: Colors.white,
-      onBackground: Colors.white,
     ),
     textTheme: TextTheme(
       displayLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -61,6 +57,7 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Color(0xff7d6df3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

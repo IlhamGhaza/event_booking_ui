@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/app_theme.dart';
+import '../../../config/bloc/theme_cubit.dart';
+import '../widget/event_manage_card.dart';
 import 'upload_event.dart';
 
 class ManageEvent extends StatefulWidget {
@@ -10,64 +13,89 @@ class ManageEvent extends StatefulWidget {
 }
 
 class _ManageEventState extends State<ManageEvent> {
+  final List<Map<String, dynamic>> events = [
+    {
+      "imagePath": "assets/images/event.jpg",
+      "textName": "Event test",
+      "textDate": "12/12/2023",
+      "textTime": "12:00 PM",
+      'textTotAttend': '10',
+      "textTotEarn": "\$0",
+    }
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Manage Event'),
-          centerTitle: true,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const UploadEvent(),
-                    ),
-                  );
-                },
-                child: const Text('Add New Event'),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 0, // Replace with actual event count
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        title: const Text(
-                            'Event Name'), // Replace with actual event name
-                        subtitle: const Text(
-                            'Event Date'), // Replace with actual event date
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                // Edit event logic
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                // Delete event logic
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        final isDarkMode = themeMode == ThemeMode.dark;
+        final theme = isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Manage Event'),
+            centerTitle: true,
+            //icon scan qr code for scan event in right side
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: GestureDetector(
+                  onLongPress: () {
+                    // Menampilkan tooltip saat long press
+                    final SnackBar snackBar = SnackBar(
+                      content: const Text('Scan QR Attendance'),
+                      duration: const Duration(seconds: 2),
                     );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
+                  child: Tooltip(
+                    message: 'Scan QR Attendance',
+                    child: IconButton(
+                      onPressed: () {
+                        // Implementasi fungsi scan QR
+                      },
+                      icon: const Icon(Icons.qr_code_scanner),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-        ));
+          body: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.secondary,
+                  theme.colorScheme.surface,
+                  theme.scaffoldBackgroundColor,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: events.length,
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: 20.0),
+              itemBuilder: (context, index) => EventManageCard(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const UploadEvent();
+                  }));
+                },
+              ),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const UploadEvent();
+              }));
+            },
+            child: const Icon(Icons.add),
+          ),
+        );
+      },
+    );
   }
 }
